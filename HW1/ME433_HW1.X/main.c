@@ -30,7 +30,7 @@
 #pragma config UPLLEN = 1 // USB clock on
 
 // DEVCFG3
-#pragma config USERID = 10101111001110001101 // "josh" without upper/lowercase nibbles 
+#pragma config USERID = 0 // "josh" without upper/lowercase nibbles 
 #pragma config PMDL1WAY = 0 // allow multiple reconfigurations
 #pragma config IOL1WAY = 0 // allow multiple reconfigurations
 #pragma config FUSBIDIO = 1 // USB pins controlled by USB module
@@ -61,13 +61,18 @@ int main() {
     TRISBbits.TRISB4 = 1;
     LATAbits.LATA4 = 1; //start high   
   
-    
+    _CP0_SET_COUNT(0);
     
     __builtin_enable_interrupts();
 
     while(1) {
 	// use _CP0_SET_COUNT(0) and _CP0_GET_COUNT() to test the PIC timing
 	// remember the core timer runs at half the sysclk
-                  
+          
+        if (_CP0_GET_COUNT() > 2400000){ 
+            LATAINV = 10000; //invert bit 4, A4
+            _CP0_SET_COUNT(0);
+        }       
+      
     }
 }
