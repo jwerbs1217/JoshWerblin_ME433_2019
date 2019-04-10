@@ -23,9 +23,9 @@
 #pragma config FWDTWINSZ = 11 // wdt window at 25%
 
 // DEVCFG2 - get the sysclk clock to 48MHz from the 8MHz crystal
-#pragma config FPLLIDIV = 100 // divide input clock to be in range 4-5MHz //actually divided by 5 here
-#pragma config FPLLMUL = 111 // multiply clock after FPLLIDIV //multiplied by 24
-#pragma config FPLLODIV = 100 // divide clock after FPLLMUL to get 48MHz //divide by 5
+#pragma config FPLLIDIV = 001 // divide input clock to be in range 4-5MHz 
+#pragma config FPLLMUL = 111 // multiply clock after FPLLIDIV 
+#pragma config FPLLODIV = 001 // divide clock after FPLLMUL to get 48MHz 
 #pragma config UPLLIDIV = 001 // divider for the 8MHz input clock, then multiplied by 12 to get 48MHz for USB
 #pragma config UPLLEN = 1 // USB clock on
 
@@ -68,11 +68,11 @@ int main() {
     while(1) {
 	// use _CP0_SET_COUNT(0) and _CP0_GET_COUNT() to test the PIC timing
 	// remember the core timer runs at half the sysclk
-          
-        if (_CP0_GET_COUNT() > 2400000){ 
-            LATAINV = 10000; //invert bit 4, A4
-            _CP0_SET_COUNT(0);
-        }       
-      
+        while (PORTBbits.RB4 != 0){  
+            if (_CP0_GET_COUNT() > 12000){ 
+                LATAINV = 10000; //invert bit 4, A4
+                _CP0_SET_COUNT(0);
+            }       
+        }
     }
 }
