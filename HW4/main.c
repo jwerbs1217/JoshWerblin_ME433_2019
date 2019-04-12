@@ -2,6 +2,8 @@
 #include<xc.h>           // processor SFR definitions
 #include<sys/attribs.h>  // __ISR macro
 #include "DAC.h"
+#include<math.h>
+
 
 // DEVCFG0
 #pragma config DEBUG = 11 // no debugging
@@ -66,13 +68,13 @@ int main() {
 
       initSPI1(); //initialize SPI1
 
-      int triangle[] = {};
+      float triangle[] = {};
       for (int i=0;i<200;i++){ //this will be updated at 1000Hz so 200 pts is one period at 5Hz
-        triangle[i] = -1*abs(i-100); //initialize triangle wave at 5Hz
+        triangle[i] = -10.24*abs(i-100)+1024; //initialize triangle wave at 5Hz
       }
-      int sine[] = {};
+      float sine[] = {};
       for (int i=0;i<100;i++){ //100 pts is one period at 10Hz
-        sine[i] = sin(i); //initialize sine wave at 10Hz
+        sine[i] = 512*sin(( (i+25)/50) * M_PI)+512; //initialize sine wave at 10Hz
       }
 
       _CP0_SET_COUNT(0);
