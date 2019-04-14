@@ -5,6 +5,7 @@
 #include<math.h>
 
 
+
 // DEVCFG0
 #pragma config DEBUG = 11 // no debugging
 #pragma config JTAGEN = 0 // no jtag
@@ -85,10 +86,10 @@ int main() {
 
   while(1){
     for (int i=0;i<200;i++){
-    while (_CP0_GET_COUNT()<24000){ //core timer is 24MHz, we update at 1kHz
-      writeDAC(triangle[i],'a');
-      writeDAC(sine[i],'b');
-    }
+    while (_CP0_GET_COUNT()<24000){} //core timer is 24MHz, we update at 1kHz
+    writeDAC(triangle[i],'a');
+    writeDAC(sine[i],'b');
+    _CP0_SET_COUNT(0);
   }
 
 

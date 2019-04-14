@@ -9,10 +9,13 @@ void initDAC(){
 
 void writeDAC(int input, char channel){
   if (channel=='a'){
-    buffer = (0b0011 << 12) || (input<<2);
+    buffer = (0b0111 << 12) || (input<<2);
   }
   if (channel=='b'){
-    buffer = (0b1011 << 12) || (input<<2);
+    buffer = (0b1111 << 12) || (input<<2);
   }
+  while(!SPI1STATbits.SPIRBF) { // wait to receive the byte
+  ;
+}
   int rx = ioSPI(buffer);
 }
