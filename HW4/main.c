@@ -66,15 +66,15 @@ int main() {
       TRISBbits.TRISB4 = 1;
       LATAbits.LATA4 = 1; //start high
 
-      initSPI1(); //initialize SPI1
+      initDAC(); //initialize DAC
 
       float triangle[] = {};
       for (int i=0;i<200;i++){ //this will be updated at 1000Hz so 200 pts is one period at 5Hz
         triangle[i] = -10.24*abs(i-100)+1024; //initialize triangle wave at 5Hz
       }
       float sine[] = {};
-      for (int i=0;i<100;i++){ //100 pts is one period at 10Hz
-        sine[i] = 512*sin(( (i+25)/50) * M_PI)+512; //initialize sine wave at 10Hz
+      for (int i=0;i<200;i++){ //100 pts is one period at 10Hz
+        sine[i] = 512*sin(( (i+25)/50) * 3.14159265359)+512; //initialize sine wave at 10Hz
       }
 
       _CP0_SET_COUNT(0);
@@ -84,10 +84,13 @@ int main() {
 
 
   while(1){
+    for (int i=0;i<200;i++){
     while (_CP0_GET_COUNT()<24000){ //core timer is 24MHz, we update at 1kHz
-      //write to DAC
+      writeDAC(triangle[i],'a');
+      writeDAC(sine[i],'b');
     }
   }
+
 
   return 0;
 }

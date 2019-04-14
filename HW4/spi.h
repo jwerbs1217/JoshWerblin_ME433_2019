@@ -2,6 +2,6 @@
 #define SPI_H
 
 void initSPI1();
-char SPI1_IO(char write);
+int ioSPI(int buffer);
 
 #endif
