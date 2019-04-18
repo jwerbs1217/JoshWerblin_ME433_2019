@@ -3,7 +3,7 @@
 
 
 void initDAC();
-void writeDAC(unsigned int, char);
+void setVoltage(unsigned int, char);
 
 
 #endif

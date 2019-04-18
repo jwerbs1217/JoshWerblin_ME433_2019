@@ -4,10 +4,9 @@
 
 void initDAC(){
   initSPI1();
-  //divide by 2*(BRG+1) -> 48MHz/4=12MHz baud
 }
 
-void writeDAC(unsigned int input, char channel){
+void setVoltage(unsigned int input, char channel){
   unsigned int buffer;
   
   if (channel=='a'){

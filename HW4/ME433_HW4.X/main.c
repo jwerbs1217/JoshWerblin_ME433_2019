@@ -4,8 +4,6 @@
 #include "DAC.h"
 #include<math.h>
 
-
-
 // DEVCFG0
 #pragma config DEBUG = 0b11 // no debugging
 #pragma config JTAGEN = 0 // no jtag
@@ -59,10 +57,6 @@ int main() {
       // disable JTAG to get pins back
       DDPCONbits.JTAGEN = 0;
 
-      // do your TRIS and LAT commands here
-      //A4 to be output
-      //B4 to  be input
-
       TRISAbits.TRISA4 = 0;
       TRISBbits.TRISB4 = 1;
       LATAbits.LATA4 = 1; //start high
@@ -75,31 +69,23 @@ int main() {
       }
       float sine[200] = {};
       for (i=0;i<200;i++){ //100 pts is one period at 10Hz
-        sine[i] = 512*sin(( (i+25)/50) * 3.14159265359)+512; //initialize sine wave at 10Hz
+        sine[i] = 511.5+ 511.5*sin(( (i+25.0)/50.0) * 3.14159265359); //initialize sine wave at 10Hz
       }
-
-      _CP0_SET_COUNT(0);
-
       
-      
+      _CP0_SET_COUNT(0);    
       __builtin_enable_interrupts();
 
 
 
   while(1){
       for ( i=0;i<200;i++){
-      
       while (_CP0_GET_COUNT()<24000000/1000){;} //change this to 1kHz
-       LATAINV = 10000; //invert bit 4, A4
-    
-    writeDAC(triangle[i],'a');
-     writeDAC(sine[i],'b');
+      LATAINV = 10000; //invert bit 4, A4
+      setVoltage(triangle[i],'a');
+      setVoltage(sine[i],'b');
       _CP0_SET_COUNT(0);
   
         }
-      
-
-
   
     }
 }
