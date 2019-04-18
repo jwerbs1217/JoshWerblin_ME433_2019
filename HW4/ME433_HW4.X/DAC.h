@@ -3,7 +3,7 @@
 
 
 void initDAC();
-void writeDAC(int input, char channel);
+void writeDAC(unsigned int, char);
 
 
 #endif
