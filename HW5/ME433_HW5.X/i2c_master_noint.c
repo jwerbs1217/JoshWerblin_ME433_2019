@@ -6,9 +6,9 @@
 #include<xc.h>   
 
 void i2c_master_setup(void) {
-  I2C2BRG =  0x1A;            // I2CBRG = [1/(2*Fsck) - PGD]*Pblck - 2 
-                                    // look up PGD for your PIC32 
-                                    //we want 100kHz
+  I2C2BRG =  53;            // I2CBRG = [1/(2*Fsck) - PGD]*Pblck - 2 
+                                    // PGD = 104ns
+                                    //we want 400kHz
   I2C2CONbits.ON = 1;               // turn on the I2C2 module
 }
 
