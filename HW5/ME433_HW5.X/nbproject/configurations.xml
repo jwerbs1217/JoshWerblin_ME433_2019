@@ -5,8 +5,6 @@
                    displayName="Header Files"
                    projectFiles="true">
       <itemPath>myPIC32.h</itemPath>
-      <itemPath>DAC.h</itemPath>
-      <itemPath>spi.h</itemPath>
       <itemPath>i2c_master_noint.h</itemPath>
       <itemPath>IO_expander.h</itemPath>
     </logicalFolder>
@@ -18,9 +16,6 @@
                    displayName="Source Files"
                    projectFiles="true">
       <itemPath>main.c</itemPath>
-      <itemPath>myPIC32.c</itemPath>
-      <itemPath>DAC.c</itemPath>
-      <itemPath>spi.c</itemPath>
       <itemPath>i2c_master_noint.c</itemPath>
       <itemPath>IO_expander.c</itemPath>
     </logicalFolder>

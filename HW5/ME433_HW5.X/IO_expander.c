@@ -1,5 +1,6 @@
 #include "IO_expander.h"
-#define IOADDR 0b0100000 //change the address of your expander here
+#include<xc.h>   
+
 void initExpander(){
     ANSELBbits.ANSB2 = 0;
     ANSELBbits.ANSB3 = 0;
@@ -9,7 +10,7 @@ void initExpander(){
 void setExpander(char pin, char level){
       i2c_master_start();
       i2c_master_send(IOADDR << 1);
-      i2c_master_send(pin) // the register to write to
+      i2c_master_send(pin); // the register to write to
       i2c_master_send(level); // the value to put in the register
       i2c_master_stop(); // make the stop bit
 }

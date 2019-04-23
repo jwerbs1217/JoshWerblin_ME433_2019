@@ -1,4 +1,5 @@
 #include "myPIC32.h"
+#include<xc.h>   
 
 void initPIC(){
           // set the CP0 CONFIG register to indicate that kseg0 is cacheable (0x3)

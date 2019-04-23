@@ -3,6 +3,7 @@
 // Change I2C2 to the I2C channel you are using
 // I2C pins need pull-up resistors, 2k-10k
 //courtesy of Prof. Nick Marchuk
+#include<xc.h>   
 
 void i2c_master_setup(void) {
   I2C2BRG =  0x1A;            // I2CBRG = [1/(2*Fsck) - PGD]*Pblck - 2 
