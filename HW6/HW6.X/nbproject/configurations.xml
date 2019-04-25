@@ -6,7 +6,6 @@
                    projectFiles="true">
       <itemPath>ili9341.h</itemPath>
       <itemPath>myPIC32.h</itemPath>
-      <itemPath>spi.h</itemPath>
     </logicalFolder>
     <logicalFolder name="LinkerScript"
                    displayName="Linker Files"
@@ -17,7 +16,6 @@
                    projectFiles="true">
       <itemPath>main.c</itemPath>
       <itemPath>ili9341.c</itemPath>
-      <itemPath>spi.c</itemPath>
     </logicalFolder>
     <logicalFolder name="ExternalFiles"
                    displayName="Important Files"

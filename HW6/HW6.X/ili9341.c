@@ -196,7 +196,7 @@ void SPI1_init() {
   
   SPI1CON = 0; // turn off the spi module and reset it
   SPI1BUF; // clear the rx buffer by reading from it
-  SPI1BRG = 0; // baud rate to 12 MHz [SPI1BRG = (48000000/(2*desired))-1]
+  SPI1BRG = 1; // baud rate to 12 MHz [SPI1BRG = (48000000/(2*desired))-1]
   SPI1STATbits.SPIROV = 0; // clear the overflow bit
   SPI1CONbits.CKE = 1; // data changes when clock goes from hi to lo (since CKP is 0)
   SPI1CONbits.MSTEN = 1; // master operation
@@ -239,7 +239,10 @@ void LCD_setAddr(unsigned short x, unsigned short y, unsigned short w, unsigned 
 }
 
 void LCD_drawPixel(unsigned short x, unsigned short y, unsigned short color) {
-  // check boundary
+    if (x>240){x=240;}// check boundary
+    if (y>320){y=320;}
+    if (x<0){x=0;}
+    if (y<0){y=0;}
     
     CS = 0; // CS
     
@@ -260,4 +263,40 @@ void LCD_clearScreen(unsigned short color) {
 	}
     
     CS = 1; // CS
+}
+
+LCD_print(char *m, unsigned short x, unsigned short y, unsigned short fc, unsigned short bgc){
+    int t=0;
+    while(m[t]){
+	LCD_drawletter(m[t],x+(t*5),y,fc,bgc);
+	t++;
+    }
+}
+
+LCD_drawletter(char letter,unsigned short x, unsigned short y, unsigned short fc, unsigned short bgc){
+    int i,j;
+    for (i=0;i<5;i++){ //every letter is 5 pixels wide
+        char col = ASCII[letter-0x20][i]; //-0x20 to shift down
+        for (j=0;j<8;j++){
+            char bit = ((col>>j) & 1);
+            if (bit==1){
+                LCD_drawPixel(x+i, y+j, fc); 
+            } else {
+                LCD_drawPixel(x+i, y+j, bgc);
+                }
+            }
+        }
+}
+
+LCD_drawbar(unsigned short percentLength, unsigned short maxLength, unsigned short height, unsigned short x, unsigned short y, unsigned short fc, unsigned short bgc){
+    int i,j;
+    int length = (percentLength * maxLength)/100;
+    for (i=0;i<height;i++){
+        for (j=0;j<length;j++){
+            LCD_drawPixel(x+j, y+i, fc);
+        }
+        for (j=length;j<maxLength;j++){
+            LCD_drawPixel(x+j, y+i, bgc);
+        }
+    }
 }
