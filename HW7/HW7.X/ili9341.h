@@ -209,5 +209,5 @@ void LCD_drawPixel(unsigned short x, unsigned short y, unsigned short color);
 void LCD_clearScreen(unsigned short color);
 void LCD_print(char *m, unsigned short x, unsigned short y, unsigned short fc, unsigned short bgc);
 void LCD_drawletter(char letter,unsigned short x, unsigned short y, unsigned short fc, unsigned short bgc);
-void LCD_drawbar(unsigned short percentLength, unsigned short maxLength, unsigned short height, unsigned short x, unsigned short y, unsigned short fc, unsigned short bgc);
+void LCD_drawbar(char direction, short percentLength, unsigned short maxLength, unsigned short width, unsigned short x, unsigned short y, unsigned short fc, unsigned short bgc);
 #endif
