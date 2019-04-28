@@ -58,9 +58,12 @@ void i2c_read_multiple(unsigned char address, unsigned char reg, unsigned char *
     i2c_master_send(address<<1|1); // write the address, shifted left by 1, or'ed with a 1 to indicate reading
     int i;
     for (i=0;i<length;i++){
-        char r = i2c_master_recv(); // save the value returned
-        i2c_master_ack(1); // make the ack so the slave knows we got it
-        data[i] = r;
+        data[i] = i2c_master_recv(); // save the value returned
+               if (i < (length - 1)){
+        i2c_master_ack(0);
+        } else {
+        i2c_master_ack(1);
+        }
     }
     i2c_master_stop(); // make the stop bit
 }

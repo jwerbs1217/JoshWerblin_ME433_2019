@@ -54,10 +54,10 @@ int main() {
         if (_CP0_GET_COUNT()>24000000/10){ //10 Hz
         LATAINV = 0b10000; //Heartbeat
         
-        sprintf(m,"accel x,y,z %d, %d, %d  ",,,);
+        sprintf(m,"accel x,y,z %d, %d, %d  ",x_acc,y_acc,z_acc);
         _CP0_SET_COUNT(0);
-        LCD_print(m,10,32,ILI9341_WHITE,ILI9341_BLACK);
-        //LCD_drawbar(k,100,5,28,40,ILI9341_CYAN,ILI9341_BLACK);
+        LCD_print(m,0,5,ILI9341_WHITE,ILI9341_BLACK);
+        LCD_drawbar(100*x_acc/32767,100,5,120,160,ILI9341_CYAN,ILI9341_BLACK);//need to edit LCD_drawbar to go in directions besides right
         sprintf(m,"%d Hz",24000000/(_CP0_GET_COUNT())); //frame rate
         LCD_print(m,0,312,ILI9341_MAGENTA,ILI9341_BLACK);       
       }
