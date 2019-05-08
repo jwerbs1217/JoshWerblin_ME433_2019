@@ -96,13 +96,13 @@ int main() {
         if (z>-22000){
             if (((x<120) && x>100) && ((y<140) && (y>120))){
                 num++;
-                sprintf(m," %d   ",num);
+                sprintf(m,"%d   ",num);
                 LCD_print(m,110,160,ILI9341_WHITE,ILI9341_BLACK);
             }
             
             if (((x<120) && x>100) && ((y<200) && (y>180))){
                 num--;
-                sprintf(m," %d   ",num);
+                sprintf(m,"%d   ",num);
                 LCD_print(m,110,160,ILI9341_WHITE,ILI9341_BLACK);
             }
         }
