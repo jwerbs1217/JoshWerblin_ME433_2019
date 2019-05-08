@@ -31,6 +31,3 @@ void XPT2046_read(unsigned short *x, unsigned short *y, unsigned int *z){
     *z = z1-z2+4095;
 }
 
-void num2pix(unsigned short *x, unsigned short *y){
-    
-}

@@ -7,5 +7,4 @@
 void XPT2046_read(unsigned short *x, unsigned short *y, unsigned int *z);
 
 
-
 #endif

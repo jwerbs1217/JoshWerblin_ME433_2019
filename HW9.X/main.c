@@ -34,6 +34,24 @@ int main() {
       LCD_clearScreen(ILI9341_BLACK);
       
       
+      int i;
+      for (i=0;i<20;i++){
+        LCD_drawPixel(100+i,120,ILI9341_WHITE);
+        LCD_drawPixel(100,120+i,ILI9341_WHITE);
+        LCD_drawPixel(100+i,140,ILI9341_WHITE);
+        LCD_drawPixel(120,120+i,ILI9341_WHITE);
+      }
+      LCD_print("+",108,130,ILI9341_WHITE,ILI9341_BLACK);
+      
+      LCD_print("0",110,160,ILI9341_WHITE,ILI9341_BLACK);
+      
+      for (i=0;i<20;i++){
+        LCD_drawPixel(100+i,180,ILI9341_WHITE);
+        LCD_drawPixel(100,180+i,ILI9341_WHITE);
+        LCD_drawPixel(100+i,200,ILI9341_WHITE);
+        LCD_drawPixel(120,180+i,ILI9341_WHITE);
+      }
+      LCD_print("-",108,190,ILI9341_WHITE,ILI9341_BLACK);
       
       _CP0_SET_COUNT(0);    
       __builtin_enable_interrupts();
@@ -42,7 +60,7 @@ int main() {
       char m[100];
       int length = 14;
       unsigned char data[length];
-      
+      int num=0;
   while(1){
         while (_CP0_GET_COUNT()<24000000/20){} //20 Hz
         i2c_read_multiple(IMUADDR, 0x20, data, length); 
@@ -66,8 +84,9 @@ int main() {
         XPT2046_read(&x, &y, &z);
         sprintf(m,"touch x,y,z: %d, %d, %d    ",x,y,z);
         LCD_print(m,0,30,ILI9341_WHITE,ILI9341_BLACK);
-        
-        sprintf(m,"pixel touch x,y: %d, %d    ",240*x/32768,320*y/32768);
+        x = 240*x/32768;
+        y = 320-320*y/32768;
+        sprintf(m,"pixel touch x,y: %d, %d    ",x,y);
         LCD_print(m,0,55,ILI9341_WHITE,ILI9341_BLACK);  
         
         sprintf(m,"%d Hz",24000000/(_CP0_GET_COUNT())); //frame rate
@@ -75,7 +94,17 @@ int main() {
         
         
         if (z>-22000){
+            if (((x<120) && x>100) && ((y<140) && (y>120))){
+                num++;
+                sprintf(m," %d   ",num);
+                LCD_print(m,110,160,ILI9341_WHITE,ILI9341_BLACK);
+            }
             
+            if (((x<120) && x>100) && ((y<200) && (y>180))){
+                num--;
+                sprintf(m," %d   ",num);
+                LCD_print(m,110,160,ILI9341_WHITE,ILI9341_BLACK);
+            }
         }
       
   
