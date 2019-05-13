@@ -47,8 +47,11 @@ SUBSTITUTE GOODS, TECHNOLOGY, SERVICES, OR ANY CLAIMS BY THIRD PARTIES
 // *****************************************************************************
 
 #include "app.h"
-#include <stdio.h>
-#include <xc.h>
+#include "i2c_master_noint.h"
+#include "ili9341.h"
+#include "imu.h"
+#include<xc.h>
+#include<stdio.h>
 
 // *****************************************************************************
 // *****************************************************************************
@@ -60,7 +63,7 @@ uint8_t APP_MAKE_BUFFER_DMA_READY dataOut[APP_READ_BUFFER_SIZE];
 uint8_t APP_MAKE_BUFFER_DMA_READY readBuffer[APP_READ_BUFFER_SIZE];
 int len, i = 0;
 int startTime = 0; // to remember the loop time
-
+unsigned char IMUdata[14];
 // *****************************************************************************
 /* Application Data
   Summary:
@@ -328,7 +331,15 @@ void APP_Initialize(void) {
     /* Set up the read buffer */
     appData.readBuffer = &readBuffer[0];
 
-    /* PUT YOUR LCD, IMU, AND PIN INITIALIZATIONS HERE */
+    TRISAbits.TRISA4 = 0;
+    TRISBbits.TRISB4 = 1;
+    LATAbits.LATA4 = 1; //start high   
+    SPI1_init();
+    LCD_init();
+    LCD_clearScreen(ILI9341_BLACK);
+    LCD_print("Initializing IMU",50,120,ILI9341_MAGENTA,ILI9341_BLACK);
+    initIMU();
+    LCD_clearScreen(ILI9341_BLACK);
 
     startTime = _CP0_GET_COUNT();
 }
@@ -413,8 +424,8 @@ void APP_Tasks(void) {
             /* Check if a character was received or a switch was pressed.
              * The isReadComplete flag gets updated in the CDC event handler. */
 
-             /* WAIT FOR 5HZ TO PASS OR UNTIL A LETTER IS RECEIVED */
-            if (appData.isReadComplete || _CP0_GET_COUNT() - startTime > (48000000 / 2 / 5)) {
+             /* WAIT FOR 100HZ TO PASS OR UNTIL A LETTER IS RECEIVED */
+            if (appData.isReadComplete || _CP0_GET_COUNT() - startTime > (48000000 / 2 / 100)) {
                 appData.state = APP_STATE_SCHEDULE_WRITE;
             }
 
@@ -437,8 +448,22 @@ void APP_Tasks(void) {
             /* PUT THE TEXT YOU WANT TO SEND TO THE COMPUTER IN dataOut
             AND REMEMBER THE NUMBER OF CHARACTERS IN len */
             /* THIS IS WHERE YOU CAN READ YOUR IMU, PRINT TO THE LCD, ETC */
-            len = sprintf(dataOut, "%d\r\n", i);
-            i++; // increment the index so we see a change in the text
+            
+
+            i2c_read_multiple(IMUADDR, 0x20, IMUdata, 14); 
+            short int temp = (IMUdata[1]<<8)|IMUdata[0];
+            short int x_gyr = (IMUdata[3]<<8)|IMUdata[2];
+            short int y_gyr = (IMUdata[5]<<8)|IMUdata[4];
+            short int z_gyr = (IMUdata[7]<<8)|IMUdata[6];
+            short int x_acc = (IMUdata[9]<<8)|IMUdata[8];
+            short int y_acc = (IMUdata[11]<<8)|IMUdata[10];
+            short int z_acc = (IMUdata[13]<<8)|IMUdata[12];
+        
+            LATAINV = 0b10000; //Heartbeat
+        
+            len =sprintf(dataOut,"accel x,y,z %d, %d, %d  \r\n",x_acc,y_acc,z_acc);
+            
+           
             /* IF A LETTER WAS RECEIVED, ECHO IT BACK SO THE USER CAN SEE IT */
             if (appData.isReadComplete) {
                 USB_DEVICE_CDC_Write(USB_DEVICE_CDC_INDEX_0,
@@ -454,7 +479,7 @@ void APP_Tasks(void) {
                 startTime = _CP0_GET_COUNT(); // reset the timer for acurate delays
             }
             break;
-
+            
         case APP_STATE_WAIT_FOR_WRITE_COMPLETE:
 
             if (APP_StateReset()) {
