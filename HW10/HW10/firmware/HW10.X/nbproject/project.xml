@@ -15,7 +15,7 @@
             <make-dep-projects/>
             <sourceRootList>
                 <sourceRootElem>../src</sourceRootElem>
-                <sourceRootElem>../..</sourceRootElem>
+                <sourceRootElem>../../../../../../../../microchip/harmony/v2_06</sourceRootElem>
                 <sourceRootElem>..\src</sourceRootElem>
                 <sourceRootElem>..\src\default</sourceRootElem>
                 <sourceRootElem>..\src\system_config\default</sourceRootElem>
