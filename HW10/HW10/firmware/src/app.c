@@ -64,6 +64,7 @@ uint8_t APP_MAKE_BUFFER_DMA_READY readBuffer[APP_READ_BUFFER_SIZE];
 int len, i = 0;
 int startTime = 0; // to remember the loop time
 unsigned char IMUdata[14];
+int writeFlag = 0;
 // *****************************************************************************
 /* Application Data
   Summary:
@@ -405,6 +406,10 @@ void APP_Tasks(void) {
                         /* YOU COULD PUT AN IF STATEMENT HERE TO DETERMINE WHICH LETTER
                         WAS RECEIVED (USUALLY IT IS THE NULL CHARACTER BECAUSE NOTHING WAS
                       TYPED) */
+                if (appData.readBuffer[0] == 'r'){
+                    writeFlag = 1;
+                    i = 0;
+                }
 
                 if (appData.readTransferHandle == USB_DEVICE_CDC_TRANSFER_HANDLE_INVALID) {
                     appData.state = APP_STATE_ERROR;
@@ -423,12 +428,15 @@ void APP_Tasks(void) {
 
             /* Check if a character was received or a switch was pressed.
              * The isReadComplete flag gets updated in the CDC event handler. */
+            
+
 
              /* WAIT FOR 100HZ TO PASS OR UNTIL A LETTER IS RECEIVED */
-            if (appData.isReadComplete || _CP0_GET_COUNT() - startTime > (48000000 / 2 / 100)) {
+            if (appData.isReadComplete || (_CP0_GET_COUNT() - startTime > (48000000 / 2 / 100))) {
                 appData.state = APP_STATE_SCHEDULE_WRITE;
             }
-
+            
+            
 
             break;
 
@@ -458,26 +466,29 @@ void APP_Tasks(void) {
             short int x_acc = (IMUdata[9]<<8)|IMUdata[8];
             short int y_acc = (IMUdata[11]<<8)|IMUdata[10];
             short int z_acc = (IMUdata[13]<<8)|IMUdata[12];
+            
+            while(PORTBbits.RB4 == 0){;} //pause with button press
+            
+            if ((_CP0_GET_COUNT() - startTime > (48000000 / 2 / 100)))
+                LATAINV = 0b10000; //Heartbeat
         
-            LATAINV = 0b10000; //Heartbeat
-        
-            len =sprintf(dataOut,"accel x,y,z %d, %d, %d  \r\n",x_acc,y_acc,z_acc);
             
            
-            /* IF A LETTER WAS RECEIVED, ECHO IT BACK SO THE USER CAN SEE IT */
-            if (appData.isReadComplete) {
-                USB_DEVICE_CDC_Write(USB_DEVICE_CDC_INDEX_0,
-                        &appData.writeTransferHandle,
-                        appData.readBuffer, 1,
-                        USB_DEVICE_CDC_TRANSFER_FLAGS_DATA_COMPLETE);
-            }
-            /* ELSE SEND THE MESSAGE YOU WANTED TO SEND */
+            if ((writeFlag == 1) && (i < 100)) 
+                len = sprintf(dataOut,"%d, %d, %d, %d, %d, %d, %d  \r\n",i,x_acc,y_acc,z_acc,x_gyr,y_gyr,z_gyr);
             else {
+                len = 1;
+                dataOut[0] = 0;
+                writeFlag = 0;
+            }
+            i++;    
+                
+                
+                
                 USB_DEVICE_CDC_Write(USB_DEVICE_CDC_INDEX_0,
                         &appData.writeTransferHandle, dataOut, len,
                         USB_DEVICE_CDC_TRANSFER_FLAGS_DATA_COMPLETE);
-                startTime = _CP0_GET_COUNT(); // reset the timer for acurate delays
-            }
+                startTime = _CP0_GET_COUNT(); // reset the timer for accurate delays
             break;
             
         case APP_STATE_WAIT_FOR_WRITE_COMPLETE:
