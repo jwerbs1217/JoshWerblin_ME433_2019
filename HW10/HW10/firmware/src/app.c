@@ -65,6 +65,15 @@ int len, i = 0;
 int startTime = 0; // to remember the loop time
 unsigned char IMUdata[14];
 int writeFlag = 0;
+#define MAFsize 10
+int MAFbuf[MAFsize] = {};
+#define FIRsize 7
+int FIRbuf[FIRsize] = {};
+float FIRwt[FIRsize] = {0.0212, 0.0897, 0.2343, 0.3094, 0.2343, 0.0897, 0.0212};
+float zIIR = 0;
+float alpha = 0.7; //for IIR
+float beta = 0.3; //for IIR
+                
 // *****************************************************************************
 /* Application Data
   Summary:
@@ -401,11 +410,6 @@ void APP_Tasks(void) {
                         &appData.readTransferHandle, appData.readBuffer,
                         APP_READ_BUFFER_SIZE);
 
-                        /* AT THIS POINT, appData.readBuffer[0] CONTAINS A LETTER
-                        THAT WAS SENT FROM THE COMPUTER */
-                        /* YOU COULD PUT AN IF STATEMENT HERE TO DETERMINE WHICH LETTER
-                        WAS RECEIVED (USUALLY IT IS THE NULL CHARACTER BECAUSE NOTHING WAS
-                      TYPED) */
                 if (appData.readBuffer[0] == 'r'){
                     writeFlag = 1;
                     i = 0;
@@ -473,9 +477,29 @@ void APP_Tasks(void) {
                 LATAINV = 0b10000; //Heartbeat
         
             
+            //MAF
+            MAFbuf[i%MAFsize] = z_acc;
+            int j = 0;
+            float sum = 0;
+            for (j=0;j<MAFsize;j++){
+                sum += MAFbuf[j];
+            }
+            float zMAF = sum/MAFsize;
+            
+            //IIR
+            zIIR = alpha * zIIR + beta*z_acc; //IIR
            
-            if ((writeFlag == 1) && (i < 100)) 
-                len = sprintf(dataOut,"%d, %d, %d, %d, %d, %d, %d  \r\n",i,x_acc,y_acc,z_acc,x_gyr,y_gyr,z_gyr);
+            //FIR
+            float zFIR = 0;
+            FIRbuf[i%FIRsize] = z_acc;
+            for (j=0;j<FIRsize;j++){
+                zFIR += FIRbuf[(i+j)%FIRsize]*FIRwt[j];
+            }
+            
+            if ((writeFlag == 1) && (i < 100)){            
+                //len = sprintf(dataOut,"%d, %d, %d, %d, %d, %d, %d  \r\n",i,x_acc,y_acc,z_acc,x_gyr,y_gyr,z_gyr); //for HW10
+                len = sprintf(dataOut,"%d %d %f %f %f  \r\n",i,z_acc,zMAF,zIIR,zFIR); //for HW11
+            }
             else {
                 len = 1;
                 dataOut[0] = 0;
