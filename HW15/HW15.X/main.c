@@ -5,7 +5,6 @@
 #include<stdio.h>  //for sprintf
 #include "myPIC32.h"     //a buncha #pragmas
 #include "ili9341.h"
-#include "imu.h"
 
 
 int main() {
@@ -29,84 +28,47 @@ int main() {
       SPI1_init();
       LCD_init();
       LCD_clearScreen(ILI9341_BLACK);
-      LCD_print("Initializing IMU",50,120,ILI9341_MAGENTA,ILI9341_BLACK);
-      initIMU();
-      LCD_clearScreen(ILI9341_BLACK);
-
-
-      int i;
-      for (i=0;i<20;i++){
-        LCD_drawPixel(100+i,120,ILI9341_WHITE);
-        LCD_drawPixel(100,120+i,ILI9341_WHITE);
-        LCD_drawPixel(100+i,140,ILI9341_WHITE);
-        LCD_drawPixel(120,120+i,ILI9341_WHITE);
-      }
-      LCD_print("+",108,130,ILI9341_WHITE,ILI9341_BLACK);
-
-      LCD_print("0",110,160,ILI9341_WHITE,ILI9341_BLACK);
-
-      for (i=0;i<20;i++){
-        LCD_drawPixel(100+i,180,ILI9341_WHITE);
-        LCD_drawPixel(100,180+i,ILI9341_WHITE);
-        LCD_drawPixel(100+i,200,ILI9341_WHITE);
-        LCD_drawPixel(120,180+i,ILI9341_WHITE);
-      }
-      LCD_print("-",108,190,ILI9341_WHITE,ILI9341_BLACK);
-
+     
+      
+      
+        T2CONbits.TCKPS = 0; // Timer2 prescaler N=1 (1:1)
+        PR2 = 2399; // PR = PBCLK / N / desiredF - 1
+        TMR2 = 0; // initial TMR2 count is 0
+        OC1CONbits.OCM = 0b110; // PWM mode without fault pin; other OC1CON bits are defaults
+        OC1RS = 0; // duty cycle
+        OC1R = 0; // initialize before turning OC1 on; afterward it is read-only
+        T2CONbits.ON = 1; // turn on Timer2
+        OC1CONbits.ON = 1; // turn on OC1
+      
+      
       _CP0_SET_COUNT(0);
       __builtin_enable_interrupts();
 
 
       char m[100];
-      int length = 14;
-      unsigned char data[length];
-      int num=0;
   while(1){
         while (_CP0_GET_COUNT()<24000000/20){} //20 Hz
-        i2c_read_multiple(IMUADDR, 0x20, data, length);
-        short int temp = (data[1]<<8)|data[0];
-        short int x_gyr = (data[3]<<8)|data[2];
-        short int y_gyr = (data[5]<<8)|data[4];
-        short int z_gyr = (data[7]<<8)|data[6];
-        short int x_acc = (data[9]<<8)|data[8];
-        short int y_acc = (data[11]<<8)|data[10];
-        short int z_acc = (data[13]<<8)|data[12];
-
+        
         LATAINV = 0b10000; //Heartbeat
-
-        sprintf(m,"accel x,y,z %d, %d, %d  ",x_acc,y_acc,z_acc);
         _CP0_SET_COUNT(0);
-        LCD_print(m,0,5,ILI9341_WHITE,ILI9341_BLACK);
-        //LCD_drawbar('h',100*x_acc/32767,100,5,120,160,ILI9341_CYAN,ILI9341_BLACK);
-        //LCD_drawbar('v',100*y_acc/32767,100,5,120,160,ILI9341_CYAN,ILI9341_BLACK);
-
-        unsigned short x, y; int z;
-        XPT2046_read(&x, &y, &z);
-        sprintf(m,"touch x,y,z: %d, %d, %d    ",x,y,z);
-        LCD_print(m,0,30,ILI9341_WHITE,ILI9341_BLACK);
-        x = 240*x/32768;
-        y = 320-320*y/32768;
-        sprintf(m,"pixel touch x,y: %d, %d    ",x,y);
-        LCD_print(m,0,55,ILI9341_WHITE,ILI9341_BLACK);
-
-        sprintf(m,"%d Hz",24000000/(_CP0_GET_COUNT())); //frame rate
-        LCD_print(m,0,312,ILI9341_MAGENTA,ILI9341_BLACK);
-
-
-        if (z>-22000){
-            if (((x<120) && x>100) && ((y<140) && (y>120))){
-                num++;
-                sprintf(m,"%d   ",num);
-                LCD_print(m,110,160,ILI9341_WHITE,ILI9341_BLACK);
-            }
-
-            if (((x<120) && x>100) && ((y<200) && (y>180))){
-                num--;
-                sprintf(m,"%d   ",num);
-                LCD_print(m,110,160,ILI9341_WHITE,ILI9341_BLACK);
-            }
-        }
+     //draw stuff here
+        
 
 
     }
+}
+
+
+void __ISR(_TIMER3_VECTOR, IPL5SOFT) Timer3ISR(void) {
+
+IFS0bits.T3IF = 0; //flag
+
+// how many times has the interrupt occurred?
+
+// set the duty cycle and direction pin
+
+}
+
+void setPWM(int percent){
+    OC1RS = percent;
 }

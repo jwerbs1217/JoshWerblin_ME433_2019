@@ -6,9 +6,11 @@ nMAF = 10;
 wMAF = ones(1,nMAF)*1/nMAF;
 figure;
 freqz(wMAF)
+title 'MAF'
 
 wFIR = fir1(6,Wn);
 figure; freqz(wFIR)
+title('FIR')
 
 figure;
 data = readtable('DSPgraphs.xlsx');
