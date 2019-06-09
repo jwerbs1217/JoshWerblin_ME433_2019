@@ -338,3 +338,15 @@ LCD_drawbar(char direction, short percentLength, unsigned short maxLength, unsig
     }
     
 }
+
+void LCD_plot(char *pix, unsigned short len, unsigned short LCDy, unsigned short color){
+    int pixel = 0;
+    for (pixel=0;pixel<8;pixel++){
+        LCD_drawPixel(10, LCDy-pixel, color);
+    }
+    for (pixel=1;pixel<=len;pixel++){
+        LCD_drawPixel(10+pixel, LCDy-(pix[pixel]>>5), color);
+        LCD_drawPixel(10+pixel, LCDy, color);
+    }
+
+}
