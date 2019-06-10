@@ -35,8 +35,8 @@ int main() {
   LCD_clearScreen(ILI9341_BLACK);
 
   TRISBbits.TRISB9 = 0; //direction pin
-  LATBbits.LATB4 = 1; //start direction high
-  
+  LATBbits.LATB9 = 1; //start direction high
+
   RPA0Rbits.RPA0R = 0b0101; //OC pin init
 
   //Timer 2 stuff
@@ -47,7 +47,7 @@ int main() {
   OC1RS = 0; // duty cycle
   OC1R = 0; // initialize before turning OC1 on; afterward it is read-only
   T2CONbits.ON = 1; // turn on Timer2
-  OC1CONbits.ON = 1; // turn on OC1
+
   
   T3CONbits.TCKPS = 0b011; //1:8 prescaler
   TMR3 = 0;
@@ -57,6 +57,7 @@ int main() {
 
   _CP0_SET_COUNT(0);
   __builtin_enable_interrupts();
+  OC1CONbits.ON = 1; // turn on OC1
   T3CONbits.ON = 1;
   
   LCD_plot(pixR,  240, 50, ILI9341_RED);
@@ -67,6 +68,8 @@ int main() {
     while (_CP0_GET_COUNT() < 24000000 / 20) {} //20 Hz
     _CP0_SET_COUNT(0);
     LATAINV = 0b10000; //Heartbeat
+    sprintf(m,"%d",j);
+    LCD_print(m,20, 100, ILI9341_WHITE, ILI9341_BLACK);
   }
 }
 
