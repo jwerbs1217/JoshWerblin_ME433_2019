@@ -212,5 +212,5 @@ void LCD_clearScreen(unsigned short color);
 void LCD_print(char *m, unsigned short x, unsigned short y, unsigned short fc, unsigned short bgc);
 void LCD_drawletter(char letter,unsigned short x, unsigned short y, unsigned short fc, unsigned short bgc);
 void LCD_drawbar(char direction, short percentLength, unsigned short maxLength, unsigned short width, unsigned short x, unsigned short y, unsigned short fc, unsigned short bgc);
-void LCD_plot(char *pix, unsigned short len);
+void LCD_plot(char *pix, unsigned short len, unsigned short LCDy, unsigned short color);
 #endif

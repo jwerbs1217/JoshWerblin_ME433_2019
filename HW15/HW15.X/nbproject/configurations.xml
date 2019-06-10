@@ -9,6 +9,7 @@
       <itemPath>imu.h</itemPath>
       <itemPath>myPIC32.h</itemPath>
       <itemPath>xpt2046.h</itemPath>
+      <itemPath>exampleRGB.h</itemPath>
     </logicalFolder>
     <logicalFolder name="LinkerScript"
                    displayName="Linker Files"
@@ -19,7 +20,6 @@
                    projectFiles="true">
       <itemPath>i2c_master_noint.c</itemPath>
       <itemPath>ili9341.c</itemPath>
-      <itemPath>imu.c</itemPath>
       <itemPath>main.c</itemPath>
       <itemPath>xpt2046.c</itemPath>
     </logicalFolder>

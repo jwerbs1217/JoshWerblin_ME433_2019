@@ -266,7 +266,7 @@ void LCD_clearScreen(unsigned short color) {
     CS = 1; // CS
 }
 
-LCD_print(char *m, unsigned short x, unsigned short y, unsigned short fc, unsigned short bgc){
+void LCD_print(char *m, unsigned short x, unsigned short y, unsigned short fc, unsigned short bgc){
     int t=0;
     while(m[t]){
 	LCD_drawletter(m[t],x+(t*5),y,fc,bgc);
@@ -274,7 +274,7 @@ LCD_print(char *m, unsigned short x, unsigned short y, unsigned short fc, unsign
     }
 }
 
-LCD_drawletter(char letter,unsigned short x, unsigned short y, unsigned short fc, unsigned short bgc){
+void LCD_drawletter(char letter,unsigned short x, unsigned short y, unsigned short fc, unsigned short bgc){
     int i,j;
     for (i=0;i<5;i++){ //every letter is 5 pixels wide
         char col = ASCII[letter-0x20][i]; //-0x20 to shift down
@@ -289,7 +289,7 @@ LCD_drawletter(char letter,unsigned short x, unsigned short y, unsigned short fc
         }
 }
 
-LCD_drawbar(char direction, short percentLength, unsigned short maxLength, unsigned short width, unsigned short x, unsigned short y, unsigned short fc, unsigned short bgc){
+void LCD_drawbar(char direction, short percentLength, unsigned short maxLength, unsigned short width, unsigned short x, unsigned short y, unsigned short fc, unsigned short bgc){
     int i,j;
     int length = (percentLength * maxLength)/100;
     if (direction == 'h'){    
