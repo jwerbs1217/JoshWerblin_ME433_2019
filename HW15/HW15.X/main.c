@@ -50,10 +50,12 @@ int main() {
 
   
   T3CONbits.TCKPS = 0b011; //1:8 prescaler
-  TMR3 = 0;
   PR3 = 59999;
-
-
+  TMR3 = 0;
+  IPC3SET = 0x0000000C; // Set priority level = 3
+  IPC3SET = 0x00000001; // Set subpriority level = 1
+  IFS0bits.T3IF = 0; // Clear the timer interrupt status flag
+  IEC0bits.T3IE = 1; // Enable timer interrupts
 
   _CP0_SET_COUNT(0);
   __builtin_enable_interrupts();
@@ -68,22 +70,24 @@ int main() {
     while (_CP0_GET_COUNT() < 24000000 / 20) {} //20 Hz
     _CP0_SET_COUNT(0);
     LATAINV = 0b10000; //Heartbeat
-    sprintf(m,"%d",j);
+    sprintf(m,"%d  ",j);
     LCD_print(m,20, 100, ILI9341_WHITE, ILI9341_BLACK);
+        sprintf(m,"%d    ",OC1RS);
+    LCD_print(m,20, 200, ILI9341_WHITE, ILI9341_BLACK);
   }
 }
 
 
 void __ISR(_TIMER_3_VECTOR, IPL5SOFT) Timer3ISR(void) {
-    j++;
+
   IFS0bits.T3IF = 0; //flag
-  if (OC1RS == 100){
+  if (OC1RS > 60000){
       OC1RS = 0;
   }
   else{
-      OC1RS++;
+      OC1RS = j * 60; // duty cycle is OC1RS/(PR3+1)
   }
-
+  j++;
   // how many times has the interrupt occurred?
   // set the duty cycle and direction pin
   if (j>100){
